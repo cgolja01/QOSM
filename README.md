@@ -29,6 +29,9 @@ RRTM/RRTMG Copyright and Disclaimer
     implied warranties. 
 -----------------------------------------------------------------------
 
+Oh right, and the version of rrtmg used is 4.85 for the LW and 4.0 for
+the SW component.
+
 Happy modeling!
 
 Edward Charlesworth

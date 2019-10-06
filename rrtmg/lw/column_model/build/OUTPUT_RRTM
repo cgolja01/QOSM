@@ -1,0 +1,14 @@
+ Wavenumbers:   10.0 - 3250.0 cm-1, ATM      1
+ LEVEL    PRESSURE   UPWARD FLUX   DOWNWARD FLUX    NET FLUX       HEATING RATE
+             mb          W/m2          W/m2           W/m2          degree/day
+   0         .000000     0.0000        0.0000         0.0000000            0.00000
+
+  Modules and versions used in this calculation:
+
+       rrtmg_lw.1col.f90:  $Revision: 1.10 $             rrtmg_lw_init.f90:  $Revision: 1.6 $  
+     rrtmglw_cldprop.f90:  $Revision: 1.9 $            rrtmglw_cldprmc.f90:  NOT USED          
+       rrtmg_lw_rtrn.f90:  NOT USED                    rrtmg_lw_rtrnmr.f90:  $Revision: 1.7 $  
+     rrtmg_lw_rtrnmc.f90:  NOT USED                    rrtmglw_setcoef.f90:  $Revision: 1.6 $  
+     rrtmg_lw_taumol.f90:  $Revision: 1.8 $                       rrtatm.f:  NOT USED          
+              util_xxx.f:  NOT USED                                extra.f:  NOT USED          
+        rrtmg_lw_k_g.f90:  $Revision: 1.4 $  
