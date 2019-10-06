@@ -2,7 +2,8 @@
 
 Hi there! Welcome to SiRaChA - the Simultaneous Radiative and
 Chemical rexlation of the Atmosphere. Check out the example
-script in the work directory for an introduction.
+script in the work directory for an introduction. You'll need
+Python3 along with numpy as netCDF4 to run this model.
 
 If you'd like to use siracha for research that you'd like to publish,
 please contact me first (Edward.Charlesworth.Science@Gmail.com) and

@@ -2,6 +2,10 @@
 #
 # Here's an example script for running siracha.
 #
+# Before you run this, you need to head into the rrtmg directories
+# and compile both the shortwave and the longwave binaries. Copy
+# or link those here, and then you're good to go.
+#
 
 # First, import libraries.
 import rce_pce_column
