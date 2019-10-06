@@ -2,6 +2,15 @@ import matplotlib.pyplot as plt
 
 def compare_plot( col ):
 
+    """
+        This is just a function that will compare the 'I' and 'O'
+        dictionaries from a column object. Just call 
+
+            compare_plot( <column object> )
+
+        and it will show you a comparison for a quick check.
+    """
+
     #Define figure
     plt.figure()
 

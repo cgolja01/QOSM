@@ -12,7 +12,12 @@
 #######################################################################
 #
 # The idea behind the structure of this code is that the model is a
-# class which contains 
+# class which contains all the methods (functions) that it needs. You
+# /can/ initialize the column object with a dictionary of input data,
+# but you would have to know exactly what the structure should be.
+# What you should do instead is initialize the model with a string
+# which is a filepath to an initialization file. See the example
+# script in the work directory for more information.
 #
 #######################################################################
 
@@ -26,13 +31,19 @@ class column :
 
     def __init__( self , input_data , inits_extra=None , verbose=False ):
 
-        self.timing_output_length = 0
+        # Logical options
+        self.bool_timing_output=True        # Output model timing info
+        self.bool_ozone_integration=True    # Integrate ozone
+        self.bool_temps_convection=True     # You probably want this
+        self.bool_run_rad=True              # Model runs faster if it's
+                                            # only in ozone mode
 
-        self.bool_timing_output=True
-        self.bool_ozone_integration=True
-        self.bool_ozone_convection=False
-        self.bool_temps_convection=True
-        self.bool_run_rad=True
+        
+        #
+        # Don't mess with the rest of the stuff in this method.
+        #
+
+        self.timing_output_length = 0
 
         # Set up the (I)nitial condition and current timepstep (D)ata dicts.
         if type( input_data ) is dict:
@@ -662,8 +673,6 @@ class column :
         self.D['lyO'][self.D['lyO']<self.D['ozone_min_val']] = \
                 self.D['ozone_min_val']
         self.D['lyO'][0] = self.D['ozone_min_val']
-        if self.bool_ozone_convection: 
-            self.D['lyO'][:self.D['cti']] = self.D['ozone_min_val']
 
     def set_water( self ):
         
@@ -948,7 +957,6 @@ class column :
         
         self.lyU_lyT = self.D['lyZ']*0.0 + self.D['strat_up_temps'] / 1000 * 86400
         self.lyU_lyO = self.D['lyZ']*0.0 + self.D['strat_up_ozone'] / 1000 * 86400
-        if self.bool_ozone_convection: self.lyU_lyO[:self.D['cti']] = 0.0
         if self.bool_temps_convection: self.lyU_lyT[:self.D['cti']] = 0.0
 
     def update_experimental_variables( self ):
