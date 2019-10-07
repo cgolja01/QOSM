@@ -36,7 +36,7 @@ the SW component.
 Happy modeling!
 
 Edward Charlesworth
-(<my first name>.<my last name>.Science@Gmail.com)
+([my first name].[my last name].Science@Gmail.com)
 October 6, 2019
 
 
