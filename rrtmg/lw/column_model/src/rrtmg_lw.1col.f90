@@ -872,6 +872,9 @@
       if (ctest .ne. cdollar) goto 1000
 
       read (ird,9011) iaer, iatm, ixsect, numangs, iout, idrv, imca, icld
+      read (ird,9014)
+
+      if ( iout .eq. 98 ) iout = 0
 
 !  If numangs set to -1, reset to default rt code for
 !  backwards compatibility with original rrtm
@@ -1067,8 +1070,9 @@
 
  9010 format (a1)
  9011 format (18x,i2,29x,i1,19x,i1,13x,i2,2x,i3,1x,i1,1x,i1,i1)
- 9012 format (e10.3,1x,i1,2x,i1,16e5.3)
+ 9012 format (e10.3,1x,i1,2x,i1,70x,16e5.3)
  9013 format (1x,i1,i3,i5)                                     
+ 9014 format (1x)
  9300 format (i5)
  9301 format (1x,i1)
 

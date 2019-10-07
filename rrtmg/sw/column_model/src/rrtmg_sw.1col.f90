@@ -831,9 +831,9 @@
                   write(iwr,9882)
                endif
 
-               write(iwr,9899) wavenum1(iout1),wavenum2(iout2),iplon
-               write(iwr,9900)
-               write(iwr,9901)
+               !write(iwr,9899) wavenum1(iout1),wavenum2(iout2),iplon
+               !write(iwr,9900)
+               !write(iwr,9901)
 
                do i = nlayers, 0, -1
                   if (pz(i) .lt. 1.e-2_rb) then
