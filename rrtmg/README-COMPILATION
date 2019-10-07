@@ -1,0 +1,13 @@
+
+Hi there,
+
+I compile RRTMG with the Portland Group F90 compiler. You can obtain
+the community edition of that for free. Once you've got a working
+compiler, head over to the module you want to compile and enter the
+build directory, where you can compile with (for the case of the LW 
+module and the portland group compiler):
+
+make -f makefiles/linux_rrtmg_lw_linux_pgi
+
+then, move that over to your work directory (or link them) with the
+names rrtmg_lw or rrtmg_sw, for the respective modules.
