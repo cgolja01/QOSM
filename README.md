@@ -17,7 +17,8 @@ does not use these modifications. We make modifications to the photochemistry in
 along similar lines to the Dacie version but they are not entirely equivalent (mostly
 because I made them before becoming aware of the Dacie work).
 
-This version of the model is as documented in Ming et al. (2025). The main changes are:
+This version of the model is as documented in Ming et al. (2025). The main changes from the
+siracha version are:
 - additions to the photochemistry
 - the option to impose a background + pertuurbation that varies in height
 - the option to impose a perturbation to the total NOx profile
