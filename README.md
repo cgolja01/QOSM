@@ -49,7 +49,7 @@ Dependencies:
 
 How to run the code:
 - First compile RRTM LW and SW for your architecture and place the binaries
-in the folder `rce_pce code`
+in the folder `rce_pce_code`
 - Modify the `input_file.nc`
 - Make any further changes to values and flags in `run_rce_pce.py`
 - Run the model using `python run_rce_pce.py`
