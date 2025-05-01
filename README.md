@@ -47,7 +47,7 @@ Dependencies:
 - numpy
 - [pygeode](https://pygeode.github.io/index.html)
 
-#References
+# References
 
 Charlesworth, E. J., Birner, T., & Albers, J. R. (2019). Ozone transport-radiation feedbacks in the tropical tropopause layer. Geophysical Research Letters, 46, 14195–14202. [doi:10.1029/2019GL084679](https://doi.org/10.1029/2019GL084679)
 
