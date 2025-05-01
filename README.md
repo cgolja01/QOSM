@@ -1,6 +1,6 @@
 # QOSM
 
-[Pronouced "cosm", it will make sense shortly]
+[Pronounced "cosm", it will make sense shortly]
 
 When compelete, this will be a set of simple models of the QBO. These will couple the 
 zonal momentum equation to radiation and ozone photochemistry. There will be
