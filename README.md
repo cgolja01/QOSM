@@ -47,6 +47,14 @@ Dependencies:
 - numpy
 - [pygeode](https://pygeode.github.io/index.html)
 
+How to run the code:
+- First compile RRTM LW and SW for your architecture and place the binaries
+in the folder `rce_pce code`
+- Modify the `input_file.nc`
+- Make any further changes to values and flags in `run_rce_pce.py`
+- Run the model using `python run_rce_pce.py`
+- The output is written to `output.nc`
+
 # References
 
 Charlesworth, E. J., Birner, T., & Albers, J. R. (2019). Ozone transport-radiation feedbacks in the tropical tropopause layer. Geophysical Research Letters, 46, 14195–14202. [doi:10.1029/2019GL084679](https://doi.org/10.1029/2019GL084679)
