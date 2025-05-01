@@ -10,7 +10,7 @@ of sensible hierarchy which we can use to understand the QBO.
 
 This model is a fork of Edward Charlesworth SIRACHA model (Charlesworth et al., 2019).
 More information about the original model can also be found in his thesis published 
-[here](https://api.mountainscholar.org/server/api/core/bitstreams/e9e84e9f-2bbd-49e3-85a8-25bf547b5a46/content)
+[here](https://api.mountainscholar.org/server/api/core/bitstreams/e9e84e9f-2bbd-49e3-85a8-25bf547b5a46/content).
 
 Sally Dacie has also extended the model chemistry (Dacie et al., 2019) but this fork
 does not use these modifications. We make modifications to the photochemistry in the model
@@ -24,7 +24,7 @@ This version of the model is as documented in Ming et al. (2025). The main chang
 - a fudge to the NO2 coefficient jno2 which really should be thought throught better.
 - multiple calls to radiation and photochemistry where various quantities  (e.g., T, O3)
 are held constant in turn and the heating rates and photochemical tendencies are stored.
-This is used to diagnose the linearise coefficients
+This is used to diagnose the linearise coefficients.
 
 The radiation code is a modified version of [RRTMG](http://rtweb.aer.com/rrtm_frame.html)
 source files, so to distribute the files, we need to inform you of the license for RRTMG:
@@ -50,7 +50,9 @@ Dependencies:
 #References
 
 Charlesworth, E. J., Birner, T., & Albers, J. R. (2019). Ozone transport-radiation feedbacks in the tropical tropopause layer. Geophysical Research Letters, 46, 14195–14202. [doi:10.1029/2019GL084679](https://doi.org/10.1029/2019GL084679)
+
 Dacie, S., and Coauthors, 2019: A 1D RCE Study of Factors Affecting the Tropical Tropopause Layer and Surface Climate. J. Climate, 32, 6769–6782, [doi:10.1175/JCLI-D-18-0778.1.](https://doi.org/10.1175/JCLI-D-18-0778.1.)
+
 Ming, A., Hitchcock, P., Orbe, C., & Dubé, K. (2025). Phase and amplitude relationships between ozone, temperature, and circulation in the quasi-biennial oscillation. Journal of Geophysical Research: Atmospheres, 130, e2024JD042469. [doi:10.1029/2024JD042469](https://doi.org/10.1029/2024JD042469)
 
 
