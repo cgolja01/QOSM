@@ -1,23 +1,33 @@
-# SIRACHA
+# QOSM
 
-Hi there! Welcome to SiRaChA - the Simultaneous Radiative and
-Chemical rexlation of the Atmosphere. Check out the example
-script in the work directory for an introduction. You'll need
-Python3 along with numpy as netCDF4 to run this model.
+[Pronouced "cosm", it will make sense shortly]
 
-If you'd like to use siracha for research that you'd like to publish,
-please contact me first and give me a heads-up of what you'd like to 
-do. You probably need to anyhow to check that the model will really 
-work for your purposes, but I'd just like to make sure I'm not 
-tredding over somebody else's work and that nobody is tredding over 
-mine. If you make a change to the model, please also make that version 
-freely available.
+When compelete, this will be a set of simple models of the QBO. These will couple the 
+zonal momentum equation to radiation and ozone photochemistry. There will be
+many such simple models (micro-QOSMs if you will) that will make
+different approximations to the equations and together they will form some sort
+of sensible hierarchy which we can use to understand the QBO.
 
-Also, this model uses RRTMG (at present). I've adjusted the way that
-RRTMG reads input text files, just so that I didn't need to implement
-two different input file writing routines (so now there's just one).
-I need to distribute the RRTMG source files, then, so I need to inform
-you of the license for RRTMG:
+This model is a fork of Edward Charlesworth SIRACHA model (Charlesworth et al., 2019).
+More information about the original model can also be found in his thesis published 
+[here](https://api.mountainscholar.org/server/api/core/bitstreams/e9e84e9f-2bbd-49e3-85a8-25bf547b5a46/content)
+
+Sally Dacie has also extended the model chemistry (Dacie et al., 2019) but this fork
+does not use these modifications. We make modifications to the photochemistry in the model
+along similar lines to the Dacie version but they are not entirely equivalent (mostly
+because I made them before becoming aware of the Dacie work).
+
+This version of the model is as documented in Ming et al. (2025). The main changes are:
+- additions to the photochemistry
+- the option to impose a background + pertuurbation that varies in height
+- the option to impose a perturbation to the total NOx profile
+- a fudge to the NO2 coefficient jno2 which really should be thought throught better.
+- multiple calls to radiation and photochemistry where various quantities  (e.g., T, O3)
+are held constant in turn and the heating rates and photochemical tendencies are stored.
+This is used to diagnose the linearise coefficients
+
+The radiation code is a modified version of [RRTMG](http://rtweb.aer.com/rrtm_frame.html)
+source files, so to distribute the files, we need to inform you of the license for RRTMG:
 
 -----------------------------------------------------------------------
 RRTM/RRTMG Copyright and Disclaimer
@@ -30,13 +40,19 @@ RRTM/RRTMG Copyright and Disclaimer
     implied warranties. 
 -----------------------------------------------------------------------
 
-Oh right, and the version of rrtmg used is 4.85 for the LW and 4.0 for
-the SW component.
+This code uses version 4.85 for the RRTM LW and 4.0 for RRTM SW component.
 
-Happy modeling!
+Dependencies:
+- netCDF4
+- numpy
+- [pygeode](https://pygeode.github.io/index.html)
 
-Edward Charlesworth
-([my first name].[my last name].Science@Gmail.com)
-October 6, 2019
+#References
+
+Charlesworth, E. J., Birner, T., & Albers, J. R. (2019). Ozone transport-radiation feedbacks in the tropical tropopause layer. Geophysical Research Letters, 46, 14195–14202. [doi:10.1029/2019GL084679](https://doi.org/10.1029/2019GL084679)
+Dacie, S., and Coauthors, 2019: A 1D RCE Study of Factors Affecting the Tropical Tropopause Layer and Surface Climate. J. Climate, 32, 6769–6782, [doi:10.1175/JCLI-D-18-0778.1.](https://doi.org/10.1175/JCLI-D-18-0778.1.)
+Ming, A., Hitchcock, P., Orbe, C., & Dubé, K. (2025). Phase and amplitude relationships between ozone, temperature, and circulation in the quasi-biennial oscillation. Journal of Geophysical Research: Atmospheres, 130, e2024JD042469. [doi:10.1029/2024JD042469](https://doi.org/10.1029/2024JD042469)
+
+
 
 
