@@ -103,6 +103,8 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
    # Numerical solution for comparison
    ds = solve_T_num(L, tau, D, F)
 
+   Tapp = solve_T_approx(L, tau, D, F)
+
    if tau == 0.: al = 0.
    else: al = 1 / (tau * 86400.)
 
@@ -112,9 +114,11 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    r2 = l2 / L**2
    l = np.sqrt(l2)
-   print(f'A {A:.2f}; r2 {r2:.2f}; l {l:.2f}')
 
-   Tfac = 1j / (1j*om) * H / R * np.sqrt(A * N2) * F / 4.
+   #Tfac = 1j / (1j*om) * H / R * np.sqrt(A * N2) * F / 4.
+   Tc = -1j / (1j*om + al) * H / R * np.sqrt(A * N2) * F / 4.
+
+   print(f'A {A:.2f}; r2 {r2:.2f}; l {l:.2f}, Tc {Tc}')
 
    lat = pyg.regularlat(181)[:]
    y = (a*lat*np.pi/180.)
@@ -127,8 +131,8 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    g = np.exp(-x**2 / 4.)
 
+   B = (0.5 + r2)**-0.5
    C = (1 - 2*r2) / (2 + 4*r2)
-   B = 1/np.sqrt(0.5 + r2)
 
    print(f'B {B:.2f}, C {C:.2f}')
 
@@ -149,13 +153,13 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
            C * (2*n + 0.5) / ((2*n + 1.5) * (2*n - 0.5)) - \
            C**2 * (2*n + 1) * (2*n + 2) / ((n + 1) * (2*n + 1.5)))
    Tns = []
-   T0 = Tfac * B * (2 + 4*C)/3.
+   T0 = -Tc * B * (2 + 4*C)/3.
    #print(T0, Tn(1))
    T = T0 * g 
    Tns.append(T.copy())
    for n in range(1, N):
       coef = [Tn(n) if i == 2*n else 0. for i in range(2*N + 1)]
-      tp = -Tfac * hermite_e.hermeval(x, coef) * g
+      tp = Tc * hermite_e.hermeval(x, coef) * g
       Tns.append(tp)
       T += tp
 
@@ -187,6 +191,9 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    ax2.plot(ds.lat[:], ds.T[:].real, 'r:', lw=2.)
    ax2.plot(ds.lat[:], ds.T[:].imag, 'r-.', lw=2.)
+
+   ax2.plot(Tapp.lat[:], Tapp[:].real, '--',  c = '0.4', lw=2.)
+   ax2.plot(Tapp.lat[:], Tapp[:].imag, '-.', c = '0.4', lw=2.)
 
    plt.ion()
 
@@ -224,7 +231,8 @@ def plot_T_Fn(n = 0, tau = 0, D = 4.14e3, F = 0.01 / 86400.):
    # Prefactors
    Vc = -F / (4.*beta*l)
    Wc = 1j * np.sqrt(A / N2) * F / 4.
-   Tc = -1j / (1j*om) * H / R * np.sqrt(N2 / A) * F / 4.
+   #Tc = -1j / (1j*om) * H / R * np.sqrt(N2 / A) * F / 4.
+   Tc = -1j / (1j*om + al) * H / R * np.sqrt(A * N2) * F / 4.
    Uc = 1 / (1j*om) * F / 4.
 
    # Polynomial coefficients
@@ -283,27 +291,20 @@ def solve_T(L=1100e3, tau = 10, D = 2e3, F = 0.15 / 86400., N=100):
    if tau == 0.: al = 0.
    else: al = 1 / (tau * 86400.)
 
-   A = (1j * om) / (1j * om + al)
+   A = (1j * om + al) / (1j * om)
 
-   Tfac = 1j / (1j*om) * H / R * np.sqrt(N2) * F / 4.
-   #print(Tfac)
+   Tc = -1j / (1j*om + al) * H / R * np.sqrt(A * N2) * F / 4.
 
-   #print(1 / om * H / R * beta * L**2 / D * F)
-
-   l2 = np.sqrt(N2) * D / (2 * beta * np.sqrt(A))
+   l2 = np.sqrt(N2/A) * D / (2 * beta)
 
    r2 = l2 / L**2
 
-   #r = 2. + 5j
+   print(f'A {A:.2f}; r2 {r2:.2f}; l {l:.2f}, Tc {Tc}')
 
    lat = pyg.regularlat(181)
    y = (a*lat*np.pi/180.)[:]
 
    x = y / np.sqrt(l2)
-
-   #x = np.linspace(-8, 8, 1001)
-
-   #G = np.exp(-r * x**2 / 2)
 
    g = np.exp(-x**2 / 4.)
 
@@ -323,7 +324,39 @@ def solve_T(L=1100e3, tau = 10, D = 2e3, F = 0.15 / 86400., N=100):
 
    #print(Tns)
 
-   T = -Tfac * hermite_e.hermeval(x, Tns) * g
+   T = Tc * hermite_e.hermeval(x, Tns) * g
+
+   return pyg.Var((lat,), values=T, name = 'T')
+# }}}
+
+def solve_T_approx(L, tau = 10, D = 2e3, F = 0.01 / 86400.):
+# {{{
+   ''' Returns approximate temperature response to arbirary gaussian forcing using expansion for small x, C.'''
+   if tau == 0.: al = 0.
+   else: al = 1 / (tau * 86400.)
+
+   A = (1j * om + al) / (1j * om)
+
+   Tc = -1j / (1j*om + al) * H / R * np.sqrt(A * N2) * F / 4.
+   l2 = np.sqrt(N2/A) * D / (2 * beta)
+
+   r2 = l2 / L**2
+   print(f'r2: {r2}, N2: {N2}, A: {A}, D:{D}')
+
+   lat = pyg.regularlat(181)
+   y = (a*lat*np.pi/180.)[:]
+
+   x = y / np.sqrt(l2)
+
+   B = (0.5 + r2)**-0.5
+   C = (1 - 2*r2) / (2 + 4*r2)
+
+   print(f'eps: {r2 - 0.5}; C {C}')
+
+   c0 = -4./3 - 4./3 * C + 54. / 11 * C**2
+   c2 = 2./3 - 26./21 * C - 309. / 154 * C**2
+
+   T = Tc * B * (c0 + c2 * x**2) * np.exp(-x**2 / 4.)
 
    return pyg.Var((lat,), values=T, name = 'T')
 # }}}
