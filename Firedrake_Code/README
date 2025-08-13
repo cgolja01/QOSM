@@ -1,0 +1,42 @@
+This folder contains firedrake setup and solver for the "simple model" for w (equaiton 6.1) 
+Below are useful documents and instructions to setup firedrake locally: 
+
+Numerical Modeling with Firedrake 
+User Setup: 
+On macOS it is important that homebrew and Xcode are installed and up to date and that the homebrew-installed Python is used instead of the system one. At present I list the steps below required for installation on MacOS, if you are using Linux refer to online installation requirements. 
+Installing Firedrake w/ Homebrew : 
+1.	Follow the steps to install homebrew locally (https://brew.sh/) 
+a.	This will create a local homebrew folder “opt/homebrew/” 
+2.	Install venv for virtual environment management via “brew install virtualenv” 
+3.	Create a firedrake virtual environment in the desired folder using virtualenv firedrake 
+a.	For me I’ve created location “opt/homebrew/envs/firedrake” 
+4.	Activate your new environment via “source opt/homebrew/envs/firedrake /bin/activate” 
+At this point follow directions indicated here (https://www.firedrakeproject.org/install.html#) for ease the required steps are also listed below
+5.	Execute
+curl -O https://raw.githubusercontent.com/firedrakeproject/firedrake/refs/tags/2025.4.2/scripts/firedrake-configure
+
+6.	Execute 
+brew install $(python3 firedrake-configure --show-system-packages)
+7.	Install PETSc and check installation using : 
+$ git clone --branch $(python3 firedrake-configure --show-petsc-version) https://gitlab.com/petsc/petsc.git
+$ cd petsc
+
+$ python3 ../firedrake-configure --show-petsc-configure-options | xargs -L1 ./configure
+make PETSC_DIR=/path/to/petsc PETSC_ARCH=arch-firedrake-default all
+
+$ make check
+$ cd ..
+
+
+Now we can install Firedrake: 
+8.	Purge your pip cache 
+$ pip cache purge
+9.	Set firedrake flags
+$ export $(python3 firedrake-configure --show-env)
+10.	 Install firedrake (finally!) 
+$ pip install --no-binary h5py 'firedrake[check]'
+11.	Check the installation 
+$ firedrake-check
+
+
+
