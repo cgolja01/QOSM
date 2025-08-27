@@ -371,10 +371,14 @@ def solve_T_approx(L, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    print(f'eps: {r2 - 0.5}; C {C}')
 
-   c0 = -4./3 - 4./3 * C + 54. / 11 * C**2
-   c2 = 2./3 - 26./21 * C - 309. / 154 * C**2
+   c0 = -4./3 - 20./21 * C + 54. / 77. * C**2
+   c2 = 2./3 - 26./21 * C - 129 / 77. * C**2
+   c4 = 2./7 * C - 96. / 77 * C**2
+   c6 = 1. / 11 * C**2
 
-   T = Tc * B * (c0 + c2 * x**2) * np.exp(-x**2 / 4.)
+   print(f'c0-6: {c0}, {c2}, {c4}, {c6}')
+
+   T = Tc * B * (c0 + c2 * x**2 + c4 * x**4 + c6 * x**6) * np.exp(-x**2 / 4.)
 
    return pyg.Var((lat,), values=T, name = 'T')
 # }}}
@@ -786,6 +790,80 @@ def plot_r2(D = 4.14e3, F = 0.10 / 86400., fig=4, savefig = False):
 
    if savefig: 
       fn = figpath + 'r2_vs_L_tau.pdf'
+      plt.savefig(fn)
+      print(f'Figure saved to {fn}.')
+# }}}
+
+def plot_C(D = 4.14e3, F = 0.10 / 86400., fig=4, savefig = False):
+# {{{
+   ''' Plots r2 parameter against forcing meridional length scale. '''
+
+   Ls = np.array([110e3 * deg for deg in np.arange(8, 14, 1.)])
+
+   def add_C(ax, tau, lbl):
+      if tau == 0: 
+         taulbl = r'$\tau$: None'
+         al = 0.
+      else: 
+         taulbl = r'$\tau$'f': {tau} d'
+         al = 1 / (tau * 86400.)
+
+      A = (1j * om + al)/(1j * om)
+      #Ao3 = -(1j * 0.2) / (0.2  * 0.5)
+      l2 = np.sqrt(N2/A) * D / (2 * beta)
+
+      r2 = l2 / Ls**2
+      C = (1 - 2*r2) / (2 + 4*r2)
+
+      ax.plot(C.real, C.imag, 'o', label = taulbl)
+
+      if lbl:
+         ax.text(C[0].real, C[0].imag + 0.03, r'8$^\circ$', ha='center', va = 'center')
+         ax.text(C[-1].real, C[-1].imag + 0.03, r'13$^\circ$', ha='center', va = 'center')
+
+
+   plt.ioff()
+
+   f = plt.figure(fig, (4.8, 4.3))
+   f.clf()
+
+   #ax1 = f.add_subplot(111)
+
+   #ax1.plot(Ls*1e-3, r2.real, '-', label = 'real')
+   #ax1.plot(Ls*1e-3, r2.imag, '--', label = 'imag')
+
+   #ax1.axhline(y = 0.5, c = 'k')
+
+   #ax1.set_title(taulbl)
+   #ax1.set_ylim(-2, 2)
+   #ax1.set_ylabel(r'$r^2$')
+   #ax1.set_xlabel('L')
+   #ax1.legend(loc='best', frameon=False)
+
+   ax1 = f.add_subplot(111, aspect='equal')
+
+   add_C(ax1, 10, False)
+   add_C(ax1, 40, True)
+   add_C(ax1, 0,  False)
+
+   ax1.plot([0.0], [0.0], 'kx')
+
+   ax1.set_title(r'$C = (1 - 2 r^2)/(2 + 4r^2)$')
+   ax1.set_ylim(-0.35, 0.35)
+   ax1.set_xlim(-0.35, 0.35)
+   ax1.set_xlabel('Real')
+   ax1.set_ylabel('Imaginary')
+   ax1.legend(loc='best', frameon=False)
+
+   plt.tight_layout()
+
+   plt.ion()
+
+   plt.show()
+   plt.draw()
+
+   if savefig: 
+      fn = figpath + 'C_vs_L_tau.pdf'
       plt.savefig(fn)
       print(f'Figure saved to {fn}.')
 # }}}
