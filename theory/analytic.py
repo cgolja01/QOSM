@@ -96,7 +96,7 @@ def plot_gaussian_exp(r2, N=4):
    plt.draw()
 # }}}
 
-def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
+def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400., savefig = False):
 # {{{
    '''Plots temperature response to an arbitrary gaussian forcing, decomposed by eigenfunction.'''
    
@@ -105,8 +105,12 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    Tapp = solve_T_approx(L, tau, D, F)
 
-   if tau == 0.: al = 0.
-   else: al = 1 / (tau * 86400.)
+   if tau == 0: 
+      taulbl = r'$\tau$: None'
+      al = 0.
+   else: 
+      taulbl = r'$\tau$'f': {tau} d'
+      al = 1 / (tau * 86400.)
 
    A = (1j * om + al) / (1j * om)
 
@@ -170,35 +174,49 @@ def plot_T_sum(L, N=4, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    ax1 = fig.add_subplot(211)
 
-   ax1.plot(lat, G, 'k--', lw = 2., label = 'f')
+   #ax1.plot(lat, G, 'k--', lw = 2., label = 'f')
 
    for n in range(N):
-      ax1.plot(lat, gns[n], lw=1., label = f'n = {n}')
+      ax1.plot(lat, gns[n].real, lw=1., c = '0.8', label = f'n = {n}')
+      ax1.plot(lat, gns[n].imag, lw=1., c = '0.8', ls = '--')
 
    ax1.plot(lat, f.real, 'k', lw = 2., label = 'sum')
-   ax1.plot(lat, f.imag, 'k--', lw = 2., label = 'sum')
+   ax1.plot(lat, f.imag, 'k--', lw = 2.)
    ax1.set(ylim = (-0.5, 1.5))
+   ax1.set(xlim = (-50, 50))
+   ax1.set(title = 'Gaussian Forcing')
    #ax1.legend()
 
    ax2 = fig.add_subplot(212)
    for n in range(N):
-      ax2.plot(lat, Tns[n], lw=1., label = f'n = {n}')
+      ax2.plot(lat, Tns[n].real, lw=1., c = '0.8')#, label = f'n = {n}')
+      ax2.plot(lat, Tns[n].imag, lw=1., c = '0.8', ls = '--')
 
-   ax2.plot(lat, T.real, 'k', lw = 3., label = 'Re')
-   ax2.plot(lat, T.imag, 'k--', lw = 3., label = 'Im')
+   ax2.plot(lat, T.real, 'k', lw = 3., label = 'Full Sln (real)')
+   ax2.plot(lat, T.imag, 'k--', lw = 3., label = 'Full Sln (imag)')
    #ax2.set(ylim = (-.25, 1.))
    #ax2.legend()
 
-   ax2.plot(ds.lat[:], ds.T[:].real, 'r:', lw=2.)
-   ax2.plot(ds.lat[:], ds.T[:].imag, 'r-.', lw=2.)
+   #ax2.plot(ds.lat[:], ds.T[:].real, ':',  c = 'C0', lw=2.)
+   #ax2.plot(ds.lat[:], ds.T[:].imag, '-.', c = 'C0', lw=2.)
 
-   ax2.plot(Tapp.lat[:], Tapp[:].real, '--',  c = '0.4', lw=2.)
-   ax2.plot(Tapp.lat[:], Tapp[:].imag, '-.', c = '0.4', lw=2.)
+   ax2.plot(Tapp.lat[:], Tapp[:].real, '-', c = 'C1', lw=1., label = 'Approx Sln (real)')
+   ax2.plot(Tapp.lat[:], Tapp[:].imag, '--', c = 'C1', lw=1., label = 'Approx Sln (imag)')
+
+   ax2.set(ylim = (-0.15, 0.15))
+   ax2.set(xlim = (-50, 50))
+   ax2.set(title = 'Temperature response %s' % taulbl)
+   ax2.legend(loc = 'best', frameon = False)
 
    plt.ion()
 
    plt.show()
    plt.draw()
+
+   if savefig: 
+      fn = figpath + f'T_sum_vs_approx_vs_num_{taulbl}.pdf'
+      plt.savefig(fn)
+      print(f'Figure saved to {fn}.')
 # }}}
 
 def plot_T_Fn(n = 0, tau = 0, D = 4.14e3, F = 0.01 / 86400.):
@@ -353,10 +371,14 @@ def solve_T_approx(L, tau = 10, D = 2e3, F = 0.01 / 86400.):
 
    print(f'eps: {r2 - 0.5}; C {C}')
 
-   c0 = -4./3 - 4./3 * C + 54. / 11 * C**2
-   c2 = 2./3 - 26./21 * C - 309. / 154 * C**2
+   c0 = -4./3 - 20./21 * C + 54. / 77. * C**2
+   c2 = 2./3 - 26./21 * C - 129 / 77. * C**2
+   c4 = 2./7 * C - 96. / 77 * C**2
+   c6 = 1. / 11 * C**2
 
-   T = Tc * B * (c0 + c2 * x**2) * np.exp(-x**2 / 4.)
+   print(f'c0-6: {c0}, {c2}, {c4}, {c6}')
+
+   T = Tc * B * (c0 + c2 * x**2 + c4 * x**4 + c6 * x**6) * np.exp(-x**2 / 4.)
 
    return pyg.Var((lat,), values=T, name = 'T')
 # }}}
@@ -699,42 +721,64 @@ def plot_scaling_vs_L(D = 4.14e3, tau = 40, F = 0.10 / 86400., fig=4, savefig=Fa
       print(f'Figure saved to {fn}.')
 # }}}
 
-def plot_r2(D = 4.14e3, tau = 40, F = 0.10 / 86400., fig=4):
+def plot_r2(D = 4.14e3, F = 0.10 / 86400., fig=4, savefig = False):
 # {{{
    ''' Plots r2 parameter against forcing meridional length scale. '''
-   Ls = np.array([110e3 * deg for deg in np.arange(2, 15, 0.2)])
-   #Ls = np.array([110e3 * deg for deg in [10.]])
-   
-   if tau == 0: 
-      taulbl = 'tau: None'
-      al = 0.
-   else: 
-      taulbl = f'tau: {tau} d'
-      al = 1 / (tau * 86400.)
 
-   A = (1j * om + al)/(1j * om)
-   Ao3 = -(1j * 0.2) / (0.2  * 0.5)
-   l2 = np.sqrt(N2/A) * D / (2 * beta)
-   print(A, Ao3, l2)
+   Ls = np.array([110e3 * deg for deg in np.arange(8, 14, 1.)])
 
-   r2 = l2 / Ls**2
+   def add_r2(ax, tau, lbl):
+      if tau == 0: 
+         taulbl = r'$\tau$: None'
+         al = 0.
+      else: 
+         taulbl = r'$\tau$'f': {tau} d'
+         al = 1 / (tau * 86400.)
+
+      A = (1j * om + al)/(1j * om)
+      #Ao3 = -(1j * 0.2) / (0.2  * 0.5)
+      l2 = np.sqrt(N2/A) * D / (2 * beta)
+
+      r2 = l2 / Ls**2
+
+      ax.plot(r2.real, r2.imag, 'o', label = taulbl)
+
+      if lbl:
+         ax.text(r2[0].real, r2[0].imag - 0.05, r'8$^\circ$', ha='center', va = 'top')
+         ax.text(r2[-1].real, r2[-1].imag - 0.05, r'13$^\circ$', ha='center', va = 'top')
+
 
    plt.ioff()
 
-   f = plt.figure(fig, (6.3, 2.5))
+   f = plt.figure(fig, (4.8, 4.3))
    f.clf()
 
-   ax1 = f.add_subplot(111)
+   #ax1 = f.add_subplot(111)
 
-   ax1.plot(Ls*1e-3, r2.real, '-', label = 'real')
-   ax1.plot(Ls*1e-3, r2.imag, '--', label = 'imag')
+   #ax1.plot(Ls*1e-3, r2.real, '-', label = 'real')
+   #ax1.plot(Ls*1e-3, r2.imag, '--', label = 'imag')
 
-   ax1.axhline(y = 0.5, c = 'k')
+   #ax1.axhline(y = 0.5, c = 'k')
 
-   ax1.set_title(taulbl)
-   ax1.set_ylim(-2, 2)
-   ax1.set_ylabel(r'$r^2$')
-   ax1.set_xlabel('L')
+   #ax1.set_title(taulbl)
+   #ax1.set_ylim(-2, 2)
+   #ax1.set_ylabel(r'$r^2$')
+   #ax1.set_xlabel('L')
+   #ax1.legend(loc='best', frameon=False)
+
+   ax1 = f.add_subplot(111, aspect='equal')
+
+   add_r2(ax1, 10, False)
+   add_r2(ax1, 40, True)
+   add_r2(ax1, 0,  False)
+
+   ax1.plot([0.5], [0.0], 'kx')
+
+   ax1.set_title(r'$r^2 = \epsilon + 0.5$')
+   ax1.set_ylim(-0.1, 0.9)
+   ax1.set_xlim(0.1, 1.1)
+   ax1.set_xlabel('Real')
+   ax1.set_ylabel('Imaginary')
    ax1.legend(loc='best', frameon=False)
 
    plt.tight_layout()
@@ -743,4 +787,83 @@ def plot_r2(D = 4.14e3, tau = 40, F = 0.10 / 86400., fig=4):
 
    plt.show()
    plt.draw()
+
+   if savefig: 
+      fn = figpath + 'r2_vs_L_tau.pdf'
+      plt.savefig(fn)
+      print(f'Figure saved to {fn}.')
+# }}}
+
+def plot_C(D = 4.14e3, F = 0.10 / 86400., fig=4, savefig = False):
+# {{{
+   ''' Plots r2 parameter against forcing meridional length scale. '''
+
+   Ls = np.array([110e3 * deg for deg in np.arange(8, 14, 1.)])
+
+   def add_C(ax, tau, lbl):
+      if tau == 0: 
+         taulbl = r'$\tau$: None'
+         al = 0.
+      else: 
+         taulbl = r'$\tau$'f': {tau} d'
+         al = 1 / (tau * 86400.)
+
+      A = (1j * om + al)/(1j * om)
+      #Ao3 = -(1j * 0.2) / (0.2  * 0.5)
+      l2 = np.sqrt(N2/A) * D / (2 * beta)
+
+      r2 = l2 / Ls**2
+      C = (1 - 2*r2) / (2 + 4*r2)
+
+      ax.plot(C.real, C.imag, 'o', label = taulbl)
+
+      if lbl:
+         ax.text(C[0].real, C[0].imag + 0.03, r'8$^\circ$', ha='center', va = 'center')
+         ax.text(C[-1].real, C[-1].imag + 0.03, r'13$^\circ$', ha='center', va = 'center')
+
+
+   plt.ioff()
+
+   f = plt.figure(fig, (4.8, 4.3))
+   f.clf()
+
+   #ax1 = f.add_subplot(111)
+
+   #ax1.plot(Ls*1e-3, r2.real, '-', label = 'real')
+   #ax1.plot(Ls*1e-3, r2.imag, '--', label = 'imag')
+
+   #ax1.axhline(y = 0.5, c = 'k')
+
+   #ax1.set_title(taulbl)
+   #ax1.set_ylim(-2, 2)
+   #ax1.set_ylabel(r'$r^2$')
+   #ax1.set_xlabel('L')
+   #ax1.legend(loc='best', frameon=False)
+
+   ax1 = f.add_subplot(111, aspect='equal')
+
+   add_C(ax1, 10, False)
+   add_C(ax1, 40, True)
+   add_C(ax1, 0,  False)
+
+   ax1.plot([0.0], [0.0], 'kx')
+
+   ax1.set_title(r'$C = (1 - 2 r^2)/(2 + 4r^2)$')
+   ax1.set_ylim(-0.35, 0.35)
+   ax1.set_xlim(-0.35, 0.35)
+   ax1.set_xlabel('Real')
+   ax1.set_ylabel('Imaginary')
+   ax1.legend(loc='best', frameon=False)
+
+   plt.tight_layout()
+
+   plt.ion()
+
+   plt.show()
+   plt.draw()
+
+   if savefig: 
+      fn = figpath + 'C_vs_L_tau.pdf'
+      plt.savefig(fn)
+      print(f'Figure saved to {fn}.')
 # }}}
